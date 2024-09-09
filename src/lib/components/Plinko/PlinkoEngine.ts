@@ -86,7 +86,7 @@ class PlinkoEngine {
    * are found by trial and error to make the actual weighted bin payout very close to the
    * expected bin payout.
    */
-  private static ballFrictions: BallFrictionsByRowCount = {
+  /* private static ballFrictions: BallFrictionsByRowCount = {
     friction: 0.5,
     frictionAirByRowCount: {
       8: 0.0395,
@@ -99,7 +99,7 @@ class PlinkoEngine {
       15: 0.0418,
       16: 0.0364,
     },
-  };
+  }; */
 
   /**
    * Creates the engine and the game's layout.
@@ -183,36 +183,37 @@ class PlinkoEngine {
    * Drops a new ball from the top with a random horizontal offset, and deducts the balance.
    */
   dropBall() {
-    const ballOffsetRangeX = this.pinDistanceX * 0.8;
-    const ballRadius = this.pinRadius * 2;
-    const { friction, frictionAirByRowCount } = PlinkoEngine.ballFrictions;
 
+    const ballRadius = this.pinRadius * 2;
+   
+    const friction = 0.5;
+    const frictionAir = 0.002;
     const ball = Matter.Bodies.circle(
-      getRandomBetween(
-        this.canvas.width / 2 - ballOffsetRangeX,
-        this.canvas.width / 2 + ballOffsetRangeX,
-      ),
-      0,
-      ballRadius,
-      {
-        restitution: 0.8, // Bounciness
-        friction,
-        frictionAir: frictionAirByRowCount[this.rowCount],
-        collisionFilter: {
-          category: PlinkoEngine.BALL_CATEGORY,
-          mask: PlinkoEngine.PIN_CATEGORY, // Collide with pins only, but not other balls
+        373,
+        0,
+        ballRadius,
+        {
+            restitution: 0.5, // Bounciness
+            friction: friction,
+            frictionAir: frictionAir,
+            collisionFilter: {
+                category: PlinkoEngine.BALL_CATEGORY,
+                mask: PlinkoEngine.PIN_CATEGORY, // Collide with pins only, but not other balls
+            },
+            render: {
+                fillStyle: '#ff0000',
+            },
         },
-        render: {
-          fillStyle: '#ff0000',
-        },
-      },
     );
+
+    // Set the initial velocity of the ball
+/*     Matter.Body.setVelocity(ball, { x: -5, y: 10 });
+ */
     Matter.Composite.add(this.engine.world, ball);
 
     betAmountOfExistingBalls.update((value) => ({ ...value, [ball.id]: this.betAmount }));
     balance.update((balance) => balance - this.betAmount);
-  }
-
+}
   /**
    * Total width of all bins as percentage of the canvas width.
    */
